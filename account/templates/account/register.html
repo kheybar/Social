@@ -7,8 +7,32 @@
 
     <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" class="btn btn-primary" value="send">
+        {{ form.non_field_errors }}
+        <div class="col-md-3">
+            <div class="username">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                <p>
+                    {{ form.username }}
+                </p>
+                {{ form.username.errors }}
+            </div>
+            <div class="email">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                <p>
+                    {{ form.email }}
+                </p>
+                {{ form.email.errors }}
+            </div>
+            <div class="password">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                <p>
+                    {{ form.password }}
+                </p>
+                {{ form.password.errors }}
+            </div>
+            <input type="submit" class="btn btn-primary" value="send">
+        </div>
+        
     </form>
 
 

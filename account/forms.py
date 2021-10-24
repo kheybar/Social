@@ -1,5 +1,11 @@
 from django import forms
 
+email_messages = {
+    'required': 'این فیلد اجباری است',
+    'invalid': 'لطفا یک ایمیل معتبر وارد کنید',
+    'max_length': 'تعداد کارکتر ها بیش از حد مجاز است'
+}
+
 
 class UserLoginForm(forms.Form):
     username = forms.CharField(
@@ -28,6 +34,7 @@ class UserRegistarionForm(forms.Form):
     email = forms.EmailField(
         label='email',
         max_length=50,
+        error_messages=email_messages,
         widget=forms.EmailInput(
             attrs={'class': 'form-control', 'placeholder': 'email'}
         )

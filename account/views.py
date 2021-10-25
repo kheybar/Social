@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -45,3 +45,9 @@ def user_logout(request):
     logout(request)
     messages.success(request=request, message='you logout successfully', extra_tags='success')
     return redirect('posts:posts')
+
+
+
+def user_dashboard(request, pk):
+    user = get_object_or_404(User, id=pk)
+    return render(request, 'account/dashboard.html', {'user': user})

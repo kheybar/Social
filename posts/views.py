@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .models import Post
 from .forms import AddPostForm
 
@@ -22,8 +23,9 @@ def post_detail(request, year, month, day, slug):
 
 
 
-def add_post(request, user_id):
-	if request.user.id == user_id:
+@login_required
+def add_post(request, pk):
+	if request.user.id == pk:
 		if request.method == 'POST':
 			form = AddPostForm(request.POST)
 			if form.is_valid():
@@ -32,9 +34,10 @@ def add_post(request, user_id):
 				new_post.slug = slugify(form.cleaned_data['body'][:30])
 				new_post.save()
 				messages.success(request, 'your post submitted', 'success')
-				return redirect('account:dashboard', user_id)
+				return redirect('account:dashboard', pk)
 		else:
 			form = AddPostForm()
 		return render(request, 'posts/add_post.html', {'form':form})
 	else:
-		return redirect('posts:all_posts')
+		messages.success(request, 'you cant send post', 'danger')
+		return redirect('posts:posts')

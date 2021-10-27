@@ -3,9 +3,16 @@
 {% block content %}
 
     <div class="card">
-        <p class="card-header">
-            {{ post.user }} | {{ post.created | date:"j/n/Y, H:i" }}
-        </p>
+        <div class="card-header">
+            <p class="">
+                {{ post.user }} | {{ post.created | date:"j/n/Y, H:i" }}
+            </p>
+            {% if request.user.is_authenticated and request.user.id == post.user.id %}
+            <a href="{% url 'posts:delete_post' post.user.id post.id %}" class="btn btn-danger">
+                Delete
+            </a>
+            {% endif %}
+        </div>
         <p class="card-body">
             {{ post.body }}
         </p>

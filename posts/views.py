@@ -41,3 +41,14 @@ def add_post(request, pk):
 	else:
 		messages.success(request, 'you cant send post', 'danger')
 		return redirect('posts:posts')
+
+
+
+@login_required
+def delete_post(request, pk, post_id):
+	if request.user.id == pk:
+		Post.objects.filter(id=post_id).delete()
+		messages.success(request, 'your post deleted successfully', 'success')
+		return redirect('account:dashboard', pk)
+	else:
+		return redirect('posts:posts')

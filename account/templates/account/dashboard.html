@@ -15,7 +15,7 @@
     <br/><br/><br/>
     {% for post in posts %}
         <div class="card">
-            <p class="card-body"><a href="{{ post.get_absolute_url }}">{{ post.body }}</a></p>
+            <p class="card-body"><a href="{{ post.get_absolute_url }}">{{ post.body | truncatechars:20 }}</a></p>
         </div>
     {% empty %}
         <p>This user has no posts</p>

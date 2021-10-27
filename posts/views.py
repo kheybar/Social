@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .models import Post
-from .forms import AddPostForm
+from .forms import AddPostForm, EditPostForm
 
 
 def all_posts(request):
@@ -50,5 +51,25 @@ def delete_post(request, pk, post_id):
 		Post.objects.filter(id=post_id).delete()
 		messages.success(request, 'your post deleted successfully', 'success')
 		return redirect('account:dashboard', pk)
+	else:
+		return redirect('posts:posts')
+
+
+
+@login_required
+def edit_post(request, pk, post_id):
+	if request.user.id == pk:
+		post = get_object_or_404(Post, id=post_id)
+		if request.method == 'POST':
+			form = EditPostForm(request.POST, instance=post) # برای اینکه جنگو بقیه ی مقادیر رو از اینستس بگیره، بهش خود اینستنس رو میدیم
+			if form.is_valid():
+				new_post = form.save(commit=False)
+				new_post.slug = slugify(form.cleaned_data['body'][:30])
+				new_post.save()
+				messages.success(request, 'your post updated successfully', 'success')
+				return redirect('account:dashboard', pk)
+		else:
+			form = EditPostForm(instance=post)
+		return render(request, 'posts/edit_post.html', {'form': form})
 	else:
 		return redirect('posts:posts')

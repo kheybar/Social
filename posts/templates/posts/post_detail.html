@@ -15,10 +15,46 @@
                 Delete
             </a>
             {% endif %}
+        
+            <p class="card-body">
+                {{ post.body }}
+            </p>
+            <br><br><br><hr><hr>
+            {% with total=comments.count %}
+            <h4>
+                Comments | <small>this post has {{ total }} comment{{ total|pluralize }}</small>
+            </h4>
+            {% endwith %}
+            <br><br>
+            
+            {% if user.is_authenticated %}
+            <form method="post">
+                {% csrf_token %}
+
+                {{  form.as_p }}
+                <input type="submit" class="btn btn-primary" value="Send">
+            </form>
+            {% else %}
+            <p>
+                only logged in users can send comments
+            </p>
+            {% endif %}
+
+            <br><br><hr>
+            {% for comment in comments %}
+            <p>
+                {{ comment.user }} | {{ comment.created | date:"j/n/Y, H:i" }}
+            </p>
+            <p>
+                {{ comment.body }}
+            </p>
+            <hr>
+            {% empty %}
+            <p>
+                no Comments
+            </p>
+            {% endfor %}
         </div>
-        <p class="card-body">
-            {{ post.body }}
-        </p>
     </div>
 
 {% endblock %}

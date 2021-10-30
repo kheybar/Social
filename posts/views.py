@@ -3,8 +3,8 @@ from django.utils.text import slugify
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Post
-from .forms import AddPostForm, EditPostForm
+from .models import Post, Comment
+from .forms import AddPostForm, EditPostForm, AddCommentForm
 
 
 def all_posts(request):
@@ -12,15 +12,23 @@ def all_posts(request):
     return render(request, 'posts/all_posts.html', {'posts': posts})
 
 
-def post_detail(request, year, month, day, slug):
-    post = get_object_or_404(Post, 
-        created__year=year,
-        created__month=month,
-        created__day=day,
-        slug=slug,
-        )
 
-    return render(request, 'posts/post_detail.html', {'post': post})
+def post_detail(request, year, month, day, slug):
+    post = get_object_or_404(Post, created__year=year, created__month=month, created__day=day, slug=slug)
+    comments = Comment.objects.filter(post=post, is_reply=False).order_by('-created')
+    if request.method == 'POST':
+        form = AddCommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = request.user
+            new_comment.save()
+            messages.success(request, 'your comment submitted', 'success')
+            form = AddCommentForm()
+    else:
+        form = AddCommentForm()
+
+    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form})
 
 
 

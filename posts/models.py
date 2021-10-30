@@ -1,3 +1,22 @@
+"""
+
+    بکوارد ریلیشن:
+    برای اینکه از مدل کامنت به پست ها دسترسی داشته باشیم خیلی راحت انجام میشه
+    اما اگر بخوایم از پست ها به کامنت ها دسترسی داشته باشیم باید از بکوارد ریلیشن استفاده کنیم
+    زمانی که بخوایم برعکس به مدل دسترسی داشنه باشیم از آندلاین ست استفاده می‌کنیم
+    این روش برای تمام روابط کار میکنه به جز وان تو وان که نیاز به نوشتن آندرلاین ست نداره
+    ما بدون استثنا از آندرلاین ست استفاده نمی کنیم، ظاهر زیبایی هم نداره
+    برای تغییرش، به فیلدمون یدونه ریلیتد نیم اضافه میکنیم و دیگه از اون اسم استفاده میکنیم
+    این برای زمانی کار میکنه که بخوایم برعکس داخل رابطه حرکت کنیم
+
+    اگر بخوایم کاری کنیم که نشه بصورت برعکس داخل رابطه حرکت کرد، در ریلیتد نیم یک علامت مثبت میزاریم
+
+
+"""
+
+
+
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
@@ -22,3 +41,19 @@ class Post(models.Model):
             self.created.day,
             self.slug,
         ))
+
+
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ucomment')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='pcomment')
+    reply = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='rcomment') # برای اینکه کامنت های تو در تو داشته باشیم باید به خود مدل ربطش بدیم و از سلف در کوتیشن استفاده میکنیم تا پایتون گیر نده
+    is_reply = models.BooleanField(default=False) # The default form widget for this field is CheckboxInput, or NullBooleanSelect if null=True.
+    body = models.TextField(max_length=500)
+    created = models.DateTimeField(auto_now_add=True)
+
+
+
+    def __str__(self):
+        return f'{self.user}-{self.post}'

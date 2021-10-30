@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import fields
-from .models import Post
+from .models import Post, Comment
 
 
 
@@ -16,4 +16,11 @@ class EditPostForm(forms.ModelForm):
     # اینطوری دیگه نیاز نیست بقیه مقادیر مدل رو دستی پر کنیم، اینستنس در خودش داره
     class Meta:
         model = Post
+        fields = ('body',)
+
+
+
+class AddCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
         fields = ('body',)

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Post, Comment
-from .forms import AddPostForm, EditPostForm, AddCommentForm
+from .forms import AddPostForm, EditPostForm, AddCommentForm, AddReplyForm
 
 
 def all_posts(request):
@@ -16,6 +16,7 @@ def all_posts(request):
 def post_detail(request, year, month, day, slug):
     post = get_object_or_404(Post, created__year=year, created__month=month, created__day=day, slug=slug)
     comments = Comment.objects.filter(post=post, is_reply=False)
+    reply_form = AddReplyForm()
     if request.method == 'POST':
         form = AddCommentForm(request.POST)
         if form.is_valid():
@@ -28,7 +29,7 @@ def post_detail(request, year, month, day, slug):
     else:
         form = AddCommentForm()
 
-    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form})
+    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form, 'reply': reply_form})
 
 
 
@@ -81,3 +82,22 @@ def edit_post(request, pk, post_id):
 		return render(request, 'posts/edit_post.html', {'form': form})
 	else:
 		return redirect('posts:posts')
+
+
+
+@login_required
+def reply_comment(request, post_id, comment_id):
+    post = get_object_or_404(Post, pk=post_id)
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if request.method == 'POST':
+        form = AddReplyForm(request.POST)
+        if form.is_valid():
+            new_reply = form.save(commit=False)
+            new_reply.user = request.user
+            new_reply.post = post
+            new_reply.reply = comment
+            new_reply.is_reply = True
+            new_reply.save()
+            messages.success(request, 'your reply save successfully', 'success')
+
+    return redirect('posts:post_detail', post.created.year, post.created.month, post.created.day, post.slug)

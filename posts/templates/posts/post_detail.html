@@ -41,19 +41,42 @@
             {% endif %}
 
             <br><br><hr>
-            {% for comment in comments %}
-            <p>
-                {{ comment.user }} | {{ comment.created | date:"j/n/Y, H:i" }}
-            </p>
-            <p>
-                {{ comment.body }}
-            </p>
-            <hr>
-            {% empty %}
-            <p>
-                no Comments
-            </p>
-            {% endfor %}
+
+            <div class="card bg-dark text-white">
+                {% for comment in comments %}
+                <p class="card-header">
+                    {{ comment.user }} | {{ comment.created | date:"j/n/Y, H:i" }}
+                </p>
+                <p class="card-body">
+                    {{ comment.body }}
+                </p>
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'posts:reply_comment' post.id comment.id %}" method="post" class="col-md-3">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" class="btn btn-primary" value="Send">
+                </form>
+                {% else %}
+                <p>
+                    you have to loggin to send reply comment
+                </p>
+                {% endif %}
+                {% for reply in comment.rcomment.all %}
+                    <p class="bg-primary text-white p-3 m-3 col-md-3">
+                        <small>
+                            {{ reply.user }} | {{ reply.created | date:"j/n/Y, H:i" }}
+                        </small><br>
+                        {{ reply.body }}
+                    </p>
+                {% endfor %}
+                <hr>
+                {% empty %}
+                <p>
+                    no Comments
+                </p>
+                {% endfor %}
+            </div>
+
         </div>
     </div>
 

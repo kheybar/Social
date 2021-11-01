@@ -28,7 +28,7 @@
             <br><br>
             
             {% if user.is_authenticated %}
-            <form method="post">
+            <form method="post" novalidate class="col-md-6">
                 {% csrf_token %}
 
                 {{  form.as_p }}

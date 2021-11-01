@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import fields
+from django.forms.widgets import Widget
 from .models import Post, Comment
 
 
@@ -18,6 +19,20 @@ class EditPostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ('body',)
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'class': 'form-control'
+                })
+        }
+        error_messages = {
+            'body': {
+                'required': 'این فیلد اجباری است',
+                'max_length': 'تعداد کارکتر ها بیش از حد مجاز است',
+            }
+        }
+        help_texts = {
+            'body': 'تا 500 کاراکتر میتوانید بنویسید'
+        }
 
 
 
@@ -25,3 +40,18 @@ class AddCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('body',)
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Write Your Comment'
+                })
+        }
+        error_messages = {
+            'body': {
+                'required': 'این فیلد اجباری است',
+                'max_length': 'تعداد کارکتر ها بیش از حد مجاز است',
+            }
+        }
+        help_texts = {
+            'body': 'تا 500 کاراکتر میتوانید بنویسید'
+        }

@@ -6,6 +6,7 @@ from .models import Post, Comment
 
 class AddPostForm(forms.ModelForm):
     class Meta:
+        # متا کلاس های رو میتونیم به عنوان یک سری اطلاعات و ویژگی های اضافی در نظر بگیریم که بدیم به کلاس هامون
         model = Post
         fields = ('body',)
 

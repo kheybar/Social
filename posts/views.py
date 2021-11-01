@@ -8,14 +8,14 @@ from .forms import AddPostForm, EditPostForm, AddCommentForm
 
 
 def all_posts(request):
-    posts = Post.objects.all().order_by('-created')
+    posts = Post.objects.all()
     return render(request, 'posts/all_posts.html', {'posts': posts})
 
 
 
 def post_detail(request, year, month, day, slug):
     post = get_object_or_404(Post, created__year=year, created__month=month, created__day=day, slug=slug)
-    comments = Comment.objects.filter(post=post, is_reply=False).order_by('-created')
+    comments = Comment.objects.filter(post=post, is_reply=False)
     if request.method == 'POST':
         form = AddCommentForm(request.POST)
         if form.is_valid():

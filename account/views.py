@@ -3,8 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .forms import UserLoginForm, UserRegistarionForm
+from .forms import UserLoginForm, UserRegistarionForm, EditProfileForm
 from posts.models import Post
+from .models import Profile
 
 
 
@@ -62,3 +63,21 @@ def user_dashboard(request, pk):
     if request.user.id == pk:
         self_dashboard = True
     return render(request, 'account/dashboard.html', {'user': user, 'posts': posts, 'self_dashboard': self_dashboard})
+
+
+
+# برای اینکه کاربر بتونه پروفایلش رو آپدیت کنه، چون ما داریم از پروفایل و یوزر استفاده میکنیم،
+# روش یکم فرق داره
+@login_required
+def profile_edit(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST ,instance=user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'your profile edit successfully', extra_tags='success')
+            return redirect('account:dashboard', pk)
+    else:
+        form = EditProfileForm(instance=user.profile)
+
+    return render(request, 'account/edit_profile.html', {'form': form})

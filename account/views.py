@@ -75,9 +75,11 @@ def profile_edit(request, pk):
         form = EditProfileForm(request.POST ,instance=user.profile)
         if form.is_valid():
             form.save()
+            user.email = form.cleaned_data['email']
+            user.save()
             messages.success(request, 'your profile edit successfully', extra_tags='success')
             return redirect('account:dashboard', pk)
     else:
-        form = EditProfileForm(instance=user.profile)
+        form = EditProfileForm(instance=user.profile, initial={'email': request.user.email}) # initial: یک دیکشنری هست که میتونیم برای فیلدهامون مقدار اولیه قرار بدیم. فرقش با اینستنس اینه که میتونیم خودمون تغییرش بدیم
 
     return render(request, 'account/edit_profile.html', {'form': form})

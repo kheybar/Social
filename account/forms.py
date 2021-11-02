@@ -49,6 +49,7 @@ class UserRegistarionForm(forms.Form):
 
 
 class EditProfileForm(forms.ModelForm):
+    email = forms.EmailField() # Add Dynamical Field
     class Meta:
         model = Profile
         fields = ('bio', 'age')

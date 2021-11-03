@@ -1,11 +1,14 @@
+from django.http import response
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .forms import UserLoginForm, UserRegistarionForm, EditProfileForm
+from .forms import UserLoginForm, PhoneLoginForm, PhoneLoginVerifyForm, UserRegistarionForm, EditProfileForm
 from posts.models import Post
 from .models import Profile
+from random import randint
+from kavenegar import *
 
 
 
@@ -28,6 +31,43 @@ def user_login(request):
         form = UserLoginForm()
     
     return render(request, 'account/login.html', {'form': form})
+
+
+def phone_login(request):
+	if request.method == 'POST':
+		form = PhoneLoginForm(request.POST)
+		if form.is_valid():
+			global phone, rand_num
+			phone = f"0{form.cleaned_data['phone']}"
+			rand_num = randint(1000, 9999)
+			api = KavenegarAPI('6A3948423067466E74556D4C776B7A4458592B737A67665936556437614A30316D6F5A334A7436435173673D') 
+			message = f'کد ورود شما به شبکه اجتماعی سوشیال {rand_num}'
+			params = { 'sender' : '10008663', 'receptor': phone, 'message':message} 
+			response = api.sms_send(params)
+			return redirect('account:phone_login_verify')
+	else:
+		form = PhoneLoginForm()
+	return render(request, 'account/login_phone.html', {'form':form})
+
+
+
+def phone_login_verify(request):
+	if request.method == 'POST':
+		form = PhoneLoginVerifyForm(request.POST)
+		if form.is_valid():
+			if rand_num == form.cleaned_data['code']:
+				profile = get_object_or_404(Profile, phone=phone)
+				user = get_object_or_404(User, profile__id=profile.id)
+				login(request, user)
+				messages.success(request, 'logged in successfully', 'success')
+				return redirect('posts:posts')
+			else:
+				messages.error(request, 'your code is wrong', 'warning')
+	else:
+		form = PhoneLoginVerifyForm()
+    
+	return render(request, 'account/phone_login_verify.html', {'form': form})
+
 
 
 

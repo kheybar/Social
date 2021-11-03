@@ -5,6 +5,7 @@
         <a class="nav-link" href="{% url 'account:logout' %}">Logout</a>
         {% else %}
         <a class="nav-link" href="{% url 'account:login' %}">Login</a>
+        <a class="nav-link" href="{% url 'account:phone_login' %}">Login Phone</a>
         <a class="nav-link" href="{% url 'account:register' %}">Register</a>
         {% endif %}
       </div>

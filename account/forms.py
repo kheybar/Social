@@ -24,6 +24,22 @@ class UserLoginForm(forms.Form):
 
 
 
+class PhoneLoginForm(forms.Form):
+	phone = forms.IntegerField()
+
+	def clean_phone(self):
+		phone = Profile.objects.filter(phone=self.cleaned_data['phone'])
+		if not phone.exists():
+			raise forms.ValidationError('This phone number does not exists')
+		return self.cleaned_data['phone']
+
+
+
+class PhoneLoginVerifyForm(forms.Form):
+    code = forms.IntegerField()
+
+
+
 class UserRegistarionForm(forms.Form):
     username = forms.CharField(
         label='username',
@@ -50,6 +66,9 @@ class UserRegistarionForm(forms.Form):
 
 class EditProfileForm(forms.ModelForm):
     email = forms.EmailField() # Add Dynamical Field
+    phone = forms.IntegerField()
     class Meta:
         model = Profile
         fields = ('bio', 'age')
+
+

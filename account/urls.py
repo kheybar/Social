@@ -12,4 +12,6 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('dashboard/<int:pk>', views.user_dashboard, name='dashboard'),
     path('dashboard/profile_edit/<int:pk>', views.profile_edit, name='profile_edit'),
+    path('follow/', views.follow, name='follow'),
+    path('unfollow/', views.unfollow, name='unfollow'),
 ]

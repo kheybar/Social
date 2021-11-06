@@ -53,3 +53,17 @@ def save_profile(sender, **kwargs): # سندر رو حتما باید بهش ب�
 
 # یوزر به محض اینکه ی اتفاقی افتاد براش، ی سیگنال بفرست به متود سیو پروفایل و میاد این متود رو ران میکنه
 post_save.connect(receiver=save_profile, sender=User) # مرتب حواسش به مدل یوزر هست که چیزی ذخیره میشه یا نه
+
+
+
+class Relational(models.Model):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    created = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return f'{self.from_user} following {self.to_user}'

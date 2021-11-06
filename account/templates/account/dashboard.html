@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block title %} {{ user.username }} Profile {% endblock %}
+
+{% block js_file %}
+<script src="{% static 'account/js/script.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 
@@ -14,6 +18,12 @@
     <h6 class="text-center">{{ user.email }}</h6><br>
     <p class="text-center">{{ user.profile.bio }}</p>
     <p class="text-center">{{ user.profile.age }}</p>
+
+    {% if request.user.id != user.id and not is_following %}
+    <button id="following_btn" data-id="{{ user.id }}" style="display: block;" class="btn btn-primary text-center mx-auto">Follow</button >
+    {% elif request.user.id != user.id and is_following %}    
+    <button id="following_btn" data-id="{{ user.id }}" style="display: block;" class="btn btn-danger text-center mx-auto">Unfollow</button >        
+    {% endif %}
     
 
     <br/><br/><br/>

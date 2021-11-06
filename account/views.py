@@ -1,4 +1,4 @@
-from django.http import response
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from .forms import UserLoginForm, PhoneLoginForm, PhoneLoginVerifyForm, UserRegistarionForm, EditProfileForm
 from posts.models import Post
-from .models import Profile
+from .models import Profile, Relational
 from random import randint
 from kavenegar import *
 
@@ -99,10 +99,14 @@ def user_logout(request):
 def user_dashboard(request, pk):
     user = get_object_or_404(User, id=pk)
     posts = Post.objects.filter(user=user).order_by('-created')
+    relational = Relational.objects.filter(from_user=request.user.id, to_user=user)
     self_dashboard = False
+    is_following = False
     if request.user.id == pk:
         self_dashboard = True
-    return render(request, 'account/dashboard.html', {'user': user, 'posts': posts, 'self_dashboard': self_dashboard})
+    if relational.exists():
+        is_following = True
+    return render(request, 'account/dashboard.html', {'user': user, 'posts': posts, 'self_dashboard': self_dashboard, 'is_following': is_following})
 
 
 
@@ -123,3 +127,35 @@ def profile_edit(request, pk):
         form = EditProfileForm(instance=user.profile, initial={'email': request.user.email}) # initial: یک دیکشنری هست که میتونیم برای فیلدهامون مقدار اولیه قرار بدیم. فرقش با اینستنس اینه که میتونیم خودمون تغییرش بدیم
 
     return render(request, 'account/edit_profile.html', {'form': form})
+
+
+
+
+@login_required
+def follow(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id'] # get user_id from Jquery
+        following = get_object_or_404(User, pk=user_id) # یوزری که میخوایم فالوش کنیم
+        check_relation = Relational.objects.filter(from_user=request.user, to_user=following)
+        if check_relation.exists():
+            return JsonResponse({'status': 'exists'})
+
+        else:
+            Relational(from_user=request.user, to_user=following).save()
+            return JsonResponse({'status': 'ok'})
+
+
+
+
+@login_required
+def unfollow(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id'] # get user_id from Jquery
+        following = get_object_or_404(User, pk=user_id) # یوزری که میخوایم فالوش کنیم
+        check_relation = Relational.objects.filter(from_user=request.user, to_user=following)
+        if check_relation.exists():
+            check_relation.delete()
+            return JsonResponse({'status': 'ok'})
+
+        else:
+            return JsonResponse({'status': 'not_exists'})

@@ -18,7 +18,13 @@
         
             <p class="card-body">
                 {{ post.body }}
+            </p><br><br>
+            {% with like=post.like_count %}
+            <p>
+                like{{ like|pluralize }}: {{ like }}
             </p>
+            {% endwith %}
+            <a href="{% url 'posts:post_like' post.id %}" class="btn btn-primary {% if not like_access %} disabled {% endif %}col-md-2">Like</a>
             <br><br><br><hr><hr>
             {% with total=comments.count %}
             <h4>

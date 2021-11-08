@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from .models import Post, Comment, Vote
 from .forms import AddPostForm, EditPostForm, AddCommentForm, AddReplyForm
 
 
@@ -17,6 +17,12 @@ def post_detail(request, year, month, day, slug):
     post = get_object_or_404(Post, created__year=year, created__month=month, created__day=day, slug=slug)
     comments = Comment.objects.filter(post=post, is_reply=False)
     reply_form = AddReplyForm()
+	# like control
+    like_access = True
+    if request.user.is_authenticated:
+        if post.like_can(request.user):
+            like_access = False
+
     if request.method == 'POST':
         form = AddCommentForm(request.POST)
         if form.is_valid():
@@ -29,7 +35,7 @@ def post_detail(request, year, month, day, slug):
     else:
         form = AddCommentForm()
 
-    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form, 'reply': reply_form})
+    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form, 'reply': reply_form, 'like_access': like_access})
 
 
 
@@ -101,3 +107,16 @@ def reply_comment(request, post_id, comment_id):
             messages.success(request, 'your reply save successfully', 'success')
 
     return redirect('posts:post_detail', post.created.year, post.created.month, post.created.day, post.slug)
+
+
+@login_required
+def post_like(request, post_id):
+	post = get_object_or_404(Post, pk=post_id)
+	user = get_object_or_404(User, pk=request.user.id)
+	like_check = Vote.objects.filter(post=post, user=user)
+	if like_check.exists():
+		messages.warning(request, 'you liked this post', 'danger')
+	else:
+		Vote(post=post, user=request.user).save()
+		messages.success(request, 'your like save successfully', 'success')
+	return redirect('posts:post_detail', post.created.year, post.created.month, post.created.day, post.slug)

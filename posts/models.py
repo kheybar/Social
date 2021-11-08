@@ -43,6 +43,18 @@ class Post(models.Model):
         self.slug = slugify(self.body[:30])
         super().save(*args, **kwargs)
 
+
+    # model method
+    def like_count(self):
+        return self.post_vote.count()
+
+    def like_can(self, user):
+        user = user.user_vote.all()
+        access = user.filter(post=self)
+        if access.exists():
+            return True
+        return False
+
     
     def get_absolute_url(self):
         return reverse('posts:post_detail', args=(
@@ -75,4 +87,22 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.user}-{self.body}'
 
+
+
+#  مدل متود ها در جنگو به شما اجازه میدن که عملیات ها دیتابیسی رو در سطح (روو) انجام بدین
+#  در حالی که برای کار کردن با دیتابیس در سطح (تیبل) از منیجر ها استفاده میشود
+#  هدف از استفاده مدل متود ها انتقال پیچیدگی از تمپیلت به مدل است.
+#  در جنگو بخش تمپلیت تا حد امکان باید ساده باشد تا برنامه نویس های فرانت اند بتونند سریع کدها رو فهمیده و تغییر دهند
+class Vote(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_vote')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_vote')
+    created = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        ordering = ('-created',)
+
+
+    def __str__(self):
+        return f'{self.user.username} liked {self.post.slug}'
 

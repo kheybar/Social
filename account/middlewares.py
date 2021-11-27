@@ -7,8 +7,10 @@ LOGIN_EXEMPT_URLS = [
     '/',
     '/account/login/',
     '/account/login/phone/',
+    '/account/login/phone/verify/',
     '/account/register/',
 ]
+
 
 
 class LoginMiddleware:

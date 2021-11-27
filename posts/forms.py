@@ -9,7 +9,9 @@ class AddPostForm(forms.ModelForm):
     class Meta:
         # متا کلاس های رو میتونیم به عنوان یک سری اطلاعات و ویژگی های اضافی در نظر بگیریم که بدیم به کلاس هامون
         model = Post
-        fields = ('body',)
+        fields = (
+            'body',
+            )
 
 
 
@@ -18,20 +20,24 @@ class EditPostForm(forms.ModelForm):
     # اینطوری دیگه نیاز نیست بقیه مقادیر مدل رو دستی پر کنیم، اینستنس در خودش داره
     class Meta:
         model = Post
-        fields = ('body',)
+        fields = (
+            'body',
+            )
         widgets = {
-            'body': forms.Textarea(attrs={
-                'class': 'form-control'
-                })
+            'body': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                },
+            ),
         }
         error_messages = {
             'body': {
                 'required': 'این فیلد اجباری است',
                 'max_length': 'تعداد کارکتر ها بیش از حد مجاز است',
-            }
+            },
         }
         help_texts = {
-            'body': 'تا 500 کاراکتر میتوانید بنویسید'
+            'body': 'تا 500 کاراکتر میتوانید بنویسید',
         }
 
 
@@ -39,21 +45,25 @@ class EditPostForm(forms.ModelForm):
 class AddCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('body',)
+        fields = (
+            'body',
+            )
         widgets = {
-            'body': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Write Your Comment'
-                })
-        }
+            'body': forms.Textarea(
+                attrs={
+                    'class': 'form-control', 
+                    'placeholder': 'Write Your Comment',
+                    },
+                ),
+            }
         error_messages = {
             'body': {
                 'required': 'این فیلد اجباری است',
                 'max_length': 'تعداد کارکتر ها بیش از حد مجاز است',
-            }
+            },
         }
         help_texts = {
-            'body': 'تا 500 کاراکتر میتوانید بنویسید'
+            'body': 'تا 500 کاراکتر میتوانید بنویسید',
         }
 
 
@@ -61,19 +71,23 @@ class AddCommentForm(forms.ModelForm):
 class AddReplyForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('body',)
+        fields = (
+            'body',
+            )
         widgets = {
-            'body': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Write Your Comment'
-                })
-        }
+            'body': forms.Textarea(
+                attrs={
+                    'class': 'form-control', 
+                    'placeholder': 'Write Your Comment',
+                    },
+                ),
+            }
         error_messages = {
             'body': {
                 'required': 'این فیلد اجباری است',
                 'max_length': 'تعداد کارکتر ها بیش از حد مجاز است',
-            }
+            },
         }
         help_texts = {
-            'body': 'تا 500 کاراکتر میتوانید بنویسید'
+            'body': 'تا 500 کاراکتر میتوانید بنویسید',
         }

@@ -7,6 +7,7 @@ from .models import Post, Comment, Vote
 from .forms import AddPostForm, EditPostForm, AddCommentForm, AddReplyForm
 
 
+
 def all_posts(request):
     posts = Post.objects.all()
     return render(request, 'posts/all_posts.html', {'posts': posts})
@@ -14,8 +15,16 @@ def all_posts(request):
 
 
 def post_detail(request, year, month, day, slug):
-    post = get_object_or_404(Post, created__year=year, created__month=month, created__day=day, slug=slug)
-    comments = Comment.objects.filter(post=post, is_reply=False)
+    post = get_object_or_404(Post,
+		created__year=year,
+		created__month=month,
+		created__day=day,
+		slug=slug,
+		)
+    comments = Comment.objects.filter(
+		post=post,
+		is_reply=False,
+		)
     reply_form = AddReplyForm()
 	# like control
     like_access = True
@@ -30,12 +39,26 @@ def post_detail(request, year, month, day, slug):
             new_comment.post = post
             new_comment.user = request.user
             new_comment.save()
-            messages.success(request, 'your comment submitted', 'success')
+            messages.success(
+				request,
+				'your comment submitted',
+				'success',
+				)
             form = AddCommentForm()
     else:
         form = AddCommentForm()
 
-    return render(request, 'posts/post_detail.html', {'post':post, 'comments':comments, 'form': form, 'reply': reply_form, 'like_access': like_access})
+    return render(
+		request,
+		'posts/post_detail.html',
+		context={
+			'post':post,
+			'comments':comments,
+			'form': form,
+			'reply': reply_form,
+			'like_access': like_access,
+		},
+	)
 
 
 
@@ -49,13 +72,21 @@ def add_post(request, pk):
 				new_post.user = request.user
 				new_post.slug = slugify(form.cleaned_data['body'][:30])
 				new_post.save()
-				messages.success(request, 'your post submitted', 'success')
+				messages.success(
+					request,
+					'your post submitted',
+					'success',
+					)
 				return redirect('account:dashboard', pk)
 		else:
 			form = AddPostForm()
 		return render(request, 'posts/add_post.html', {'form':form})
 	else:
-		messages.success(request, 'you cant send post', 'danger')
+		messages.success(
+			request,
+			'you cant send post',
+			'danger',
+			)
 		return redirect('posts:posts')
 
 
@@ -64,7 +95,11 @@ def add_post(request, pk):
 def delete_post(request, pk, post_id):
 	if request.user.id == pk:
 		Post.objects.filter(id=post_id).delete()
-		messages.success(request, 'your post deleted successfully', 'success')
+		messages.success(
+			request,
+			'your post deleted successfully',
+			'success',
+			)
 		return redirect('account:dashboard', pk)
 	else:
 		return redirect('posts:posts')
@@ -81,7 +116,11 @@ def edit_post(request, pk, post_id):
 				new_post = form.save(commit=False)
 				new_post.slug = slugify(form.cleaned_data['body'][:30])
 				new_post.save()
-				messages.success(request, 'your post updated successfully', 'success')
+				messages.success(
+					request,
+					'your post updated successfully',
+					'success',
+					)
 				return redirect('account:dashboard', pk)
 		else:
 			form = EditPostForm(instance=post)
@@ -104,7 +143,11 @@ def reply_comment(request, post_id, comment_id):
             new_reply.reply = comment
             new_reply.is_reply = True
             new_reply.save()
-            messages.success(request, 'your reply save successfully', 'success')
+            messages.success(
+				request,
+				'your reply save successfully',
+				'success',
+				)
 
     return redirect('posts:post_detail', post.created.year, post.created.month, post.created.day, post.slug)
 
@@ -113,10 +156,21 @@ def reply_comment(request, post_id, comment_id):
 def post_like(request, post_id):
 	post = get_object_or_404(Post, pk=post_id)
 	user = get_object_or_404(User, pk=request.user.id)
-	like_check = Vote.objects.filter(post=post, user=user)
+	like_check = Vote.objects.filter(
+		post=post,
+		user=user,
+		)
 	if like_check.exists():
-		messages.warning(request, 'you liked this post', 'danger')
+		messages.warning(
+			request,
+			'you liked this post',
+			'danger',
+			)
 	else:
 		Vote(post=post, user=request.user).save()
-		messages.success(request, 'your like save successfully', 'success')
+		messages.success(
+			request,
+			'your like save successfully',
+			'success',
+			)
 	return redirect('posts:post_detail', post.created.year, post.created.month, post.created.day, post.slug)

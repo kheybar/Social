@@ -13,10 +13,6 @@
 
 
 """
-
-
-
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
@@ -66,7 +62,6 @@ class Post(models.Model):
 
 
 
-
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ucomment')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='pcomment')
@@ -76,13 +71,10 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
 
-
     class Meta:
         # db_table = 'Comment' # تغییر نام تیبل در دیتابیس
         ordering = ('-created',) # تغییر تریب اطلاعات از داخل مدل(اگر تکست رو هدف قرار بدیم، بر اساس حروف الفبا کار میکنه)
         # unique_together = [['a', 'b']] # زمانی که بخوایم دوتا چیز با هم یکی باشند
-
-
 
     def __str__(self):
         return f'{self.user}-{self.body}'
@@ -102,7 +94,5 @@ class Vote(models.Model):
     class Meta:
         ordering = ('-created',)
 
-
     def __str__(self):
         return f'{self.user.username} liked {self.post.slug}'
-

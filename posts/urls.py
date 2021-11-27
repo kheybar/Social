@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 
+
 app_name = 'posts'
 urlpatterns = [
     path('', views.all_posts, name='posts'),
@@ -10,5 +11,5 @@ urlpatterns = [
     path('delete-post/<int:pk>/<int:post_id>', views.delete_post, name='delete_post'),
     path('edit-post/<int:pk>/<int:post_id>', views.edit_post, name='edit_post'),
     path('reply-comment/<int:post_id>/<int:comment_id>/', views.reply_comment, name='reply_comment'),
-    path('like/<int:post_id>/', views.post_like, name='post_like')
+    path('like/<int:post_id>/', views.post_like, name='post_like'),
 ]

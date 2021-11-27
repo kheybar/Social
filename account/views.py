@@ -18,19 +18,32 @@ def user_login(request):
         form = UserLoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = authenticate(request, username=cd['username'], password=cd['password'])
+            user = authenticate(
+                request,
+                username=cd['username'],
+                password=cd['password'],
+                )
             if user is not None:
                 login(request, user)
-                messages.success(request=request, message='you logged in successfully.', extra_tags='success')
+                messages.success(
+                    request=request,
+                    message='you logged in successfully.',
+                    extra_tags='success',
+                    )
                 if next:
                     return redirect(next)
                 return redirect('posts:posts')
             else:
-                messages.error(request=request, message='wrong username or password', extra_tags='warning')
+                messages.error(
+                    request=request,
+                    message='wrong username or password',
+                    extra_tags='warning',
+                    )
     else:
         form = UserLoginForm()
     
     return render(request, 'account/login.html', {'form': form})
+
 
 
 def phone_login(request):
@@ -42,7 +55,11 @@ def phone_login(request):
 			rand_num = randint(1000, 9999)
 			api = KavenegarAPI('6A3948423067466E74556D4C776B7A4458592B737A67665936556437614A30316D6F5A334A7436435173673D') 
 			message = f'کد ورود شما به شبکه اجتماعی سوشیال {rand_num}'
-			params = { 'sender' : '10008663', 'receptor': phone, 'message':message} 
+			params = { 
+                'sender' : '10008663',
+                'receptor': phone,
+                'message':message,
+                } 
 			response = api.sms_send(params)
 			return redirect('account:phone_login_verify')
 	else:
@@ -59,15 +76,22 @@ def phone_login_verify(request):
 				profile = get_object_or_404(Profile, phone=phone)
 				user = get_object_or_404(User, profile__id=profile.id)
 				login(request, user)
-				messages.success(request, 'logged in successfully', 'success')
+				messages.success(
+                    request,
+                    'logged in successfully',
+                    'success',
+                    )
 				return redirect('posts:posts')
 			else:
-				messages.error(request, 'your code is wrong', 'warning')
-	else:
-		form = PhoneLoginVerifyForm()
+				messages.error(
+                    request,
+                    'your code is wrong',
+                    'warning',
+                    )
+                    
+	form = PhoneLoginVerifyForm()
     
 	return render(request, 'account/phone_login_verify.html', {'form': form})
-
 
 
 
@@ -76,9 +100,17 @@ def user_register(request):
         form = UserRegistarionForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = User.objects.create_user(cd['username'], cd['email'], cd['password'])
+            user = User.objects.create_user(
+                cd['username'],
+                cd['email'], 
+                cd['password'],
+                )
             login(request, user)
-            messages.success(request=request, message='you register successfully, now login.', extra_tags='success')
+            messages.success(
+                request=request,
+                message='you register successfully, now login.',
+                extra_tags='success',
+                )
             return redirect('posts:posts')
     else:
         form = UserRegistarionForm()
@@ -90,7 +122,11 @@ def user_register(request):
 @login_required # if user not login, redirect to settings.LOGIN_URL(default: 'accounts/login')
 def user_logout(request):
     logout(request)
-    messages.success(request=request, message='you logout successfully', extra_tags='success')
+    messages.success(
+        request=request,
+        message='you logout successfully',
+        extra_tags='success',
+        )
     return redirect('posts:posts')
 
 
@@ -106,7 +142,17 @@ def user_dashboard(request, pk):
         self_dashboard = True
     if relational.exists():
         is_following = True
-    return render(request, 'account/dashboard.html', {'user': user, 'posts': posts, 'self_dashboard': self_dashboard, 'is_following': is_following})
+
+    return render(
+        request,
+        'account/dashboard.html',
+        context={
+            'user': user,
+            'posts': posts,
+            'self_dashboard': self_dashboard,
+            'is_following': is_following,
+            }
+        )
 
 
 
@@ -121,7 +167,11 @@ def profile_edit(request, pk):
             form.save()
             user.email = form.cleaned_data['email']
             user.save()
-            messages.success(request, 'your profile edit successfully', extra_tags='success')
+            messages.success(
+                request,
+                'your profile edit successfully',
+                extra_tags='success',
+                )
             return redirect('account:dashboard', pk)
     else:
         form = EditProfileForm(instance=user.profile, initial={'email': request.user.email}) # initial: یک دیکشنری هست که میتونیم برای فیلدهامون مقدار اولیه قرار بدیم. فرقش با اینستنس اینه که میتونیم خودمون تغییرش بدیم
@@ -136,7 +186,10 @@ def follow(request):
     if request.method == 'POST':
         user_id = request.POST['user_id'] # get user_id from Jquery
         following = get_object_or_404(User, pk=user_id) # یوزری که میخوایم فالوش کنیم
-        check_relation = Relational.objects.filter(from_user=request.user, to_user=following)
+        check_relation = Relational.objects.filter(
+            from_user=request.user,
+            to_user=following,
+            )
         if check_relation.exists():
             return JsonResponse({'status': 'exists'})
 
@@ -152,7 +205,10 @@ def unfollow(request):
     if request.method == 'POST':
         user_id = request.POST['user_id'] # get user_id from Jquery
         following = get_object_or_404(User, pk=user_id) # یوزری که میخوایم فالوش کنیم
-        check_relation = Relational.objects.filter(from_user=request.user, to_user=following)
+        check_relation = Relational.objects.filter(
+            from_user=request.user,
+            to_user=following,
+            )
         if check_relation.exists():
             check_relation.delete()
             return JsonResponse({'status': 'ok'})

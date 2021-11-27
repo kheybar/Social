@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Profile, Relational
 
 
+
 # اینلاین یک قرارداد بین برنامه نویسان است
 class ProfileInline(admin.StackedInline): # برای تعیین نحوه نمایش در ادمین جنگو از این کلاس ارث بری میکنه
     model = Profile
@@ -11,9 +12,16 @@ class ProfileInline(admin.StackedInline): # برای تعیین نحوه نما�
 
 
 class ExtendedProfileAdmin(UserAdmin): # برای برقراری ارتباط با با پنل ادمین از این کلاس ارث بری میکنه
-    inlines = (ProfileInline, )
+    inlines = (
+        ProfileInline,
+        )
 
 
 admin.site.unregister(User)
-admin.site.register(User, ExtendedProfileAdmin)
+
+admin.site.register(
+    User,
+    ExtendedProfileAdmin
+    )
+    
 admin.site.register(Relational)

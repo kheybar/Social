@@ -161,9 +161,10 @@ def post_like(request, post_id):
 		user=user,
 		)
 	if like_check.exists():
+		Vote.objects.filter(post=post, user=request.user).delete()
 		messages.warning(
 			request,
-			'you liked this post',
+			'you unliked this post',
 			'danger',
 			)
 	else:

@@ -1,0 +1,13 @@
+image: python:latest
+
+stages:
+  - deploy
+
+deploy-project:
+  stages: deploy
+  scripts:
+    - mkfir /src
+    - cd /src
+    - git clone ssh-key
+    - cd config
+    - docker-compose up -d
